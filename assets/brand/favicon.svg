@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#0F0F14"/>
+  <rect x="1" y="1" width="62" height="62" rx="15" stroke="#8C5BFF" stroke-opacity="0.45"/>
+  <!-- Spectra arrow mark -->
+  <path d="M18 42 L34 18 L50 42 L40.5 42 L40.5 48 L27.5 48 L27.5 42 Z" fill="url(#g)"/>
+  <path d="M30 34 L38 34 L34 27 Z" fill="#E9DEFF" fill-opacity="0.95"/>
+  <defs>
+    <linearGradient id="g" x1="18" y1="18" x2="50" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B794FF"/>
+      <stop offset="0.5" stop-color="#8C5BFF"/>
+      <stop offset="1" stop-color="#4B1E73"/>
+    </linearGradient>
+  </defs>
+</svg>
