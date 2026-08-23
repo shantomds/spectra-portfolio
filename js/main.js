@@ -1,4 +1,5 @@
-/* Spectra Studio portfolio interactions + galaxy dynamics */
+/* Spectra Studio portfolio — 2026 redesign
+   Core interactions + motion layer (galaxy, tilt, magnetic, progress) */
 (() => {
   const nav = document.getElementById("nav");
   const menuToggle = document.getElementById("menuToggle");
@@ -15,14 +16,13 @@
   const liveBars = document.getElementById("liveBars");
   const calmToggle = document.getElementById("calmToggle");
 
-  if (year) year.textContent = String(new Date().getFullYear());
-
-  /* ---------- Theme: dark (night) / light day (B&W bright) ---------- */
+  /* ---------- Theme: dark (night) / light (day) ---------- */
   const themeToggle = document.getElementById("themeToggle");
   const applyTheme = (mode) => {
     const light = mode === "light";
     document.documentElement.classList.toggle("theme-light", light);
     document.documentElement.classList.toggle("theme-dark", !light);
+    document.body.classList.remove("theme-dark-init");
     if (themeToggle) {
       themeToggle.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
       themeToggle.title = light ? "Day mode · click for Night" : "Night mode · click for Day";
@@ -57,7 +57,6 @@
     } catch (_) {}
   };
 
-  // Restore preference, or soft-default calm on small screens
   let calmPreferred = null;
   try {
     const stored = localStorage.getItem("spectra-calm");
@@ -73,6 +72,24 @@
     const next = !document.body.classList.contains("calm-mode");
     applyCalm(next);
   });
+
+  const motionOK = () =>
+    !document.body.classList.contains("calm-mode") &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Scroll progress bar ---------- */
+  const progressBar = document.querySelector("#scrollProgress span");
+  if (progressBar) {
+    const updateProgress = () => {
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      progressBar.style.setProperty("--progress", String(p));
+    };
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress, { passive: true });
+    updateProgress();
+  }
 
   // Sticky nav
   const onScroll = () => {
@@ -135,18 +152,100 @@
     reveals.forEach((el) => el.classList.add("show"));
   }
 
-  // Filters
+  // Filters + coverflow carousel
   const filterBtns = document.querySelectorAll(".filter-btn");
-  const cards = document.querySelectorAll(".work-card");
+  const cards = [...document.querySelectorAll(".work-card")];
+  const scene = document.getElementById("coverflow");
+  const cfCounter = document.getElementById("cfCounter");
+  let vis = [...cards];
+  let active = 0;
+  let dragX = 0;
+
+  const cfLayout = () => {
+    vis.forEach((card, i) => {
+      const off = i - active;
+      const abs = Math.abs(off);
+      if (abs > 3) {
+        card.style.display = "none";
+        card.setAttribute("aria-hidden", "true");
+        return;
+      }
+      card.style.display = "";
+      card.setAttribute("aria-hidden", abs > 0 ? "true" : "false");
+      const x = off * 46;
+      const drag = dragX;
+      card.style.transform =
+        `translate(-50%, -50%) translateX(calc(${x}% + ${drag.toFixed(1)}px)) ` +
+        `rotateY(${(-off * 38).toFixed(1)}deg) scale(${(1 - abs * 0.12).toFixed(3)}) translateZ(${-abs * 70}px)`;
+      card.style.zIndex = String(100 - abs);
+      card.style.opacity = abs > 2 ? "0" : String(1 - abs * 0.3);
+      card.classList.toggle("is-active", off === 0);
+    });
+    if (cfCounter) cfCounter.textContent = `${Math.min(active + 1, vis.length)} / ${vis.length}`;
+  };
+
+  const setActive = (i) => {
+    if (!vis.length) return;
+    active = Math.max(0, Math.min(vis.length - 1, i));
+    cfLayout();
+  };
+
+  if (scene) {
+    cfLayout();
+
+    scene.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); setActive(active - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); setActive(active + 1); }
+    });
+
+    // drag / swipe — 1:1 tracking, velocity flicks, multi-step glide
+    let down = false, startX = 0, lastX = 0, lastT = 0, vx = 0, suppressClick = false;
+    scene.addEventListener("pointerdown", (e) => {
+      down = true;
+      startX = lastX = e.clientX;
+      lastT = performance.now();
+      vx = 0;
+      suppressClick = false;
+      scene.classList.add("dragging");
+      scene.setPointerCapture(e.pointerId);
+    });
+    scene.addEventListener("pointermove", (e) => {
+      if (!down) return;
+      const now = performance.now();
+      vx = (e.clientX - lastX) / Math.max(1, now - lastT);
+      lastX = e.clientX;
+      lastT = now;
+      dragX = e.clientX - startX;
+      cfLayout();
+    });
+    const endDrag = () => {
+      if (!down) return;
+      down = false;
+      scene.classList.remove("dragging");
+      // the browser fires a click on release even after a drag — swallow it
+      if (Math.abs(dragX) > 8) suppressClick = true;
+      const CARD_GAP = 156; // ~46% of a 340px card
+      let steps = Math.round(-dragX / CARD_GAP);
+      if (steps === 0 && Math.abs(vx) > 0.45) steps = -Math.sign(vx);
+      if (steps !== 0) setActive(active + steps);
+      dragX = 0;
+      cfLayout();
+    };
+    scene.addEventListener("pointerup", endDrag);
+    scene.addEventListener("pointercancel", endDrag);
+  }
+
   filterBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       filterBtns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       const f = btn.dataset.filter;
       cards.forEach((card) => {
-        const show = f === "all" || card.dataset.cat === f;
-        card.classList.toggle("hidden", !show);
+        card.classList.toggle("hidden", !(f === "all" || card.dataset.cat === f));
       });
+      vis = cards.filter((c) => !c.classList.contains("hidden"));
+      active = 0;
+      cfLayout();
     });
   });
 
@@ -168,13 +267,11 @@
   };
 
   cards.forEach((card) => {
-    card.addEventListener("click", () => openModal(card));
-    card.setAttribute("tabindex", "0");
-    card.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openModal(card);
-      }
+    card.setAttribute("tabindex", "-1");
+    card.addEventListener("click", () => {
+      if (suppressClick) return;
+      if (card.classList.contains("is-active")) openModal(card);
+      else setActive(vis.indexOf(card));
     });
   });
 
@@ -206,11 +303,7 @@
   });
 
   /* ---------- Galaxy particles ---------- */
-  const reduceMotion =
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-    document.body.classList.contains("calm-mode");
-
-  if (particlesHost && !reduceMotion) {
+  if (particlesHost && motionOK()) {
     const count = window.innerWidth < 700 ? 18 : 36;
     for (let i = 0; i < count; i++) {
       const p = document.createElement("span");
@@ -223,13 +316,14 @@
       p.style.height = `${size}px`;
       p.style.animationDuration = `${duration}s`;
       p.style.animationDelay = `${delay}s`;
+      p.style.setProperty("--o", String(0.3 + Math.random() * 0.6));
       p.style.opacity = String(0.3 + Math.random() * 0.6);
       particlesHost.appendChild(p);
     }
   }
 
   /* ---------- Live animated bar graph ---------- */
-  if (liveBars && !document.body.classList.contains("calm-mode") && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (liveBars && motionOK()) {
     const spans = [...liveBars.querySelectorAll("span")];
     const base = [45, 62, 50, 78, 68, 90, 72];
 
@@ -248,7 +342,7 @@
     requestAnimationFrame(wave);
   }
 
-  /* ---------- Count-up metrics: 0 → target when dashboard enters view ---------- */
+  /* ---------- Count-up metrics ---------- */
   const counters = document.querySelectorAll(".count-up");
   let metricsAnimated = false;
 
@@ -265,7 +359,6 @@
     const dur = 1600;
     const tick = (now) => {
       const p = Math.min(1, (now - start) / dur);
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - p, 3);
       formatCount(el, target * eased);
       if (p < 1) requestAnimationFrame(tick);
@@ -278,12 +371,10 @@
     if (metricsAnimated) return;
     metricsAnimated = true;
     counters.forEach((c, i) => {
-      // slight stagger for polish
       setTimeout(() => runCount(c), i * 120);
     });
   };
 
-  // Ensure start at 0
   counters.forEach((c) => {
     const suffix = c.dataset.suffix || "";
     c.textContent = `0${suffix}`;
@@ -304,7 +395,6 @@
     );
     cio.observe(metricsRoot);
 
-    // If already on screen at load (e.g. tall monitor / scroll restored)
     requestAnimationFrame(() => {
       const rect = metricsRoot.getBoundingClientRect();
       if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
@@ -316,58 +406,195 @@
     startMetricsAnimation();
   }
 
-  /* ---------- Soft parallax on solar system ---------- */
-  if (!reduceMotion) {
-    const spaces = document.querySelectorAll(".space-visuals");
-    window.addEventListener(
-      "mousemove",
-      (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 12;
-        const y = (e.clientY / window.innerHeight - 0.5) * 12;
-        spaces.forEach((o) => {
-          o.style.translate = `${x}px ${y}px`;
-        });
-      },
-      { passive: true }
-    );
+  /* ---------- NEW: Tilt cards ---------- */
+  const tiltEls = document.querySelectorAll(".tilt");
+  if (tiltEls.length && motionOK() && window.matchMedia("(pointer: fine)").matches) {
+    tiltEls.forEach((el) => {
+      el.addEventListener("mousemove", (e) => {
+        const r = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        el.style.setProperty("--ry", `${(px * 8).toFixed(2)}deg`);
+        el.style.setProperty("--rx", `${(-py * 8).toFixed(2)}deg`);
+      });
+      el.addEventListener("mouseleave", () => {
+        el.style.setProperty("--rx", "0deg");
+        el.style.setProperty("--ry", "0deg");
+      });
+    });
   }
 
-  /* ---------- Meteors — one direction only (top-left → bottom-right) ---------- */
+  /* ---------- NEW: Magnetic primary buttons ---------- */
+  const magnets = document.querySelectorAll(".btn-primary");
+  if (magnets.length && motionOK() && window.matchMedia("(pointer: fine)").matches) {
+    magnets.forEach((btn) => {
+      btn.addEventListener("mousemove", (e) => {
+        const r = btn.getBoundingClientRect();
+        const x = e.clientX - r.left - r.width / 2;
+        const y = e.clientY - r.top - r.height / 2;
+        btn.style.transform = `translate(${x * 0.14}px, ${y * 0.22 - 2}px)`;
+      });
+      btn.addEventListener("mouseleave", () => {
+        btn.style.transform = "";
+      });
+    });
+  }
+
+  /* ---------- NEW: Hero role rotation ---------- */
+  const roleEl = document.getElementById("heroRole");
+  if (roleEl && motionOK()) {
+    const roles = [
+      "Creative Graphic Designer",
+      "Photo Manipulation Artist",
+      "Poster & Campaign Designer",
+      "AI Creative Systems Builder",
+    ];
+    let ri = 0;
+    const cycle = () => {
+      ri = (ri + 1) % roles.length;
+      roleEl.style.opacity = "0";
+      roleEl.style.transform = "translateY(8px)";
+      setTimeout(() => {
+        roleEl.textContent = roles[ri];
+        roleEl.style.transition = "opacity .45s ease, transform .45s ease";
+        roleEl.style.opacity = "1";
+        roleEl.style.transform = "translateY(0)";
+      }, 380);
+    };
+    roleEl.style.transition = "opacity .35s ease, transform .35s ease";
+    setInterval(cycle, 3400);
+  }
+
+  /* ---------- Cinematic footer (ported from easemize/motion-footer) ---------- */
+  const cineWrapper = document.getElementById("cineFooter");
+  if (cineWrapper) {
+    const cfGiant = document.getElementById("cfGiant");
+    const cfHeading = document.getElementById("cfHeading");
+    const cfSub = document.getElementById("cfSub");
+    const cfLinks = document.getElementById("cfLinks");
+
+    // "curtain progress": 0 when wrapper top hits viewport bottom, 1 when fully revealed
+    let cfTick = false;
+    const cfScrub = () => {
+      cfTick = false;
+      const vh = window.innerHeight;
+      const r = cineWrapper.getBoundingClientRect();
+      const p = Math.max(0, Math.min(1, (vh - r.top) / Math.max(1, r.height)));
+
+      // Parallax on the giant word: y 10vh→0, scale .8→1, opacity 0→1
+      if (cfGiant) {
+        const gp = Math.min(1, p * 1.4);
+        cfGiant.style.opacity = String(gp);
+        cfGiant.style.transform = `translateX(-50%) translateY(${(1 - gp) * 10}vh) scale(${0.8 + gp * 0.2})`;
+      }
+      // Staggered reveal: heading then links
+      const hp = Math.max(0, Math.min(1, (p - 0.15) / 0.5));
+      if (cfHeading) {
+        cfHeading.style.opacity = String(hp);
+        cfHeading.style.transform = `translateY(${(1 - hp) * 50}px)`;
+      }
+      if (cfSub) {
+        const sp = Math.max(0, Math.min(1, (p - 0.2) / 0.5));
+        cfSub.style.opacity = String(sp);
+        cfSub.style.transform = `translateY(${(1 - sp) * 40}px)`;
+      }
+      if (cfLinks) {
+        const lp = Math.max(0, Math.min(1, (p - 0.25) / 0.5));
+        cfLinks.style.opacity = String(lp);
+        cfLinks.style.transform = `translateY(${(1 - lp) * 50}px)`;
+      }
+
+      // Hand the screen to the footer: fade out the floating WhatsApp
+      document.body.classList.toggle("footer-visible", r.top < vh * 0.35);
+    };
+    const onCfScroll = () => {
+      if (!cfTick) {
+        cfTick = true;
+        requestAnimationFrame(cfScrub);
+      }
+    };
+    window.addEventListener("scroll", onCfScroll, { passive: true });
+    window.addEventListener("resize", onCfScroll, { passive: true });
+    cfScrub();
+
+    // Magnetic pills with elastic return (GSAP-free port)
+    if (motionOK() && window.matchMedia("(pointer: fine)").matches) {
+      document.querySelectorAll(".magnetic").forEach((el) => {
+        el.addEventListener("mousemove", (e) => {
+          const r = el.getBoundingClientRect();
+          const x = e.clientX - r.left - r.width / 2;
+          const y = e.clientY - r.top - r.height / 2;
+          el.style.transition = "transform 0.1s linear";
+          el.style.transform = `translate(${x * 0.35}px, ${y * 0.35}px) scale(1.05)`;
+        });
+        el.addEventListener("mouseleave", () => {
+          el.style.transition = "transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1)";
+          el.style.transform = "translate(0, 0) scale(1)";
+        });
+      });
+    }
+
+    // Back to top
+    document.getElementById("cfTop")?.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: motionOK() ? "smooth" : "auto" });
+    });
+  }
+
+  /* ---------- NEW: Dashboard dynamics ---------- */
+  // Live Dhaka clock (GMT+6)
+  const clockEl = document.getElementById("dashClock");
+  if (clockEl) {
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric", minute: "2-digit", second: "2-digit",
+      hour12: true, timeZone: "Asia/Dhaka",
+    });
+    const tickClock = () => { clockEl.textContent = fmt.format(new Date()); };
+    tickClock();
+    setInterval(tickClock, 1000);
+  }
+
+  // Oscilloscope pulse wave
+  const pulse = document.getElementById("pulseWave");
+  if (pulse) {
+    let pulseVisible = false;
+    new IntersectionObserver((e) => { pulseVisible = e[0].isIntersecting; }).observe(pulse);
+    const drawPulse = () => {
+      if (pulseVisible) {
+        const t = performance.now() / 1000;
+        const pts = [];
+        for (let i = 0; i <= 60; i++) {
+          const x = i * 5;
+          const beat = Math.pow(Math.max(0, Math.sin(t * 2 + i * 0.08)), 8) * 16;
+          const y = 20 - Math.sin(i * 0.35 + t * 1.2) * 7 - beat;
+          pts.push(`${x},${y.toFixed(1)}`);
+        }
+        pulse.setAttribute("points", pts.join(" "));
+      }
+      if (motionOK()) requestAnimationFrame(drawPulse);
+      else setTimeout(drawPulse, 1200); // slow idle refresh when calm
+    };
+    drawPulse();
+  }
+
+  // Spotlight hover on cards
+  if (window.matchMedia("(pointer: fine)").matches) {
+    document.querySelectorAll(".spotlight").forEach((card) => {
+      card.addEventListener("mousemove", (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+        card.style.setProperty("--my", `${e.clientY - r.top}px`);
+      });
+    });
+  }
+
+  /* ---------- Meteors ---------- */
   const meteorField = document.getElementById("meteorField");
-  if (meteorField && !document.body.classList.contains("calm-mode") && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    const angle = 32; // all share same flight angle
+  if (meteorField && motionOK()) {
+    const angle = 32;
     const configs = [
-      {
-        angle,
-        x0: "8vw",
-        y0: "-10vh",
-        x1: "72vw",
-        y1: "70vh",
-        len: "150px",
-        dur: "4s",
-        delay: "0.5s",
-        hero: true,
-      },
-      {
-        angle,
-        x0: "-5vw",
-        y0: "15vh",
-        x1: "55vw",
-        y1: "75vh",
-        len: "100px",
-        dur: "3.5s",
-        delay: "4.5s",
-      },
-      {
-        angle,
-        x0: "25vw",
-        y0: "-8vh",
-        x1: "95vw",
-        y1: "55vh",
-        len: "90px",
-        dur: "3.2s",
-        delay: "8.5s",
-      },
+      { angle, x0: "8vw", y0: "-10vh", x1: "72vw", y1: "70vh", len: "150px", dur: "4s", delay: "0.5s", hero: true },
+      { angle, x0: "-5vw", y0: "15vh", x1: "55vw", y1: "75vh", len: "100px", dur: "3.5s", delay: "4.5s" },
+      { angle, x0: "25vw", y0: "-8vh", x1: "95vw", y1: "55vh", len: "90px", dur: "3.2s", delay: "8.5s" },
     ];
 
     configs.forEach((c) => {
@@ -384,84 +611,64 @@
       meteorField.appendChild(m);
     });
   }
-
-  /* ---------- Dotted Earth with real continent map patterns ---------- */
+  /* ---------- Dotted Earth with continent patterns ---------- */
   function isLand(lat, lon) {
-    // lat: -90..90, lon: -180..180 — simplified real-world landmasses
     const regions = [
-      // North America
       { lat: [15, 72], lon: [-168, -52], test: (la, lo) => {
-        if (la < 25 && lo > -80) return lo < -77; // caribbean thin
+        if (la < 25 && lo > -80) return lo < -77;
         if (la > 50 && lo > -60) return lo < -55;
-        if (la < 30 && lo < -115) return true; // mexico/baja
-        return !(la < 50 && lo > -65 && la > 40); // cut hudson-ish water loosely
+        if (la < 30 && lo < -115) return true;
+        return !(la < 50 && lo > -65 && la > 40);
       }},
-      // Greenland
       { lat: [60, 84], lon: [-73, -12], test: () => true },
-      // South America
       { lat: [-56, 13], lon: [-82, -34], test: (la, lo) => {
         if (la > 5 && lo < -70) return false;
         if (la < -40 && lo < -75) return false;
         return lo < -35;
       }},
-      // Europe
       { lat: [36, 72], lon: [-10, 40], test: (la, lo) => {
-        if (la < 44 && lo < -5) return false; // atlantic
+        if (la < 44 && lo < -5) return false;
         if (la > 60 && lo > 30) return lo < 35;
         return true;
       }},
-      // Africa
       { lat: [-35, 38], lon: [-18, 52], test: (la, lo) => {
         if (la > 20 && lo < -10) return false;
         if (la < -5 && lo > 45) return false;
-        if (la > 30 && lo > 25 && lo < 35) return la < 32; // med edge
+        if (la > 30 && lo > 25 && lo < 35) return la < 32;
         return true;
       }},
-      // Middle East / Arabia
       { lat: [12, 42], lon: [34, 60], test: (la, lo) => !(la > 28 && lo > 55) },
-      // India / South Asia
       { lat: [6, 36], lon: [66, 98], test: (la, lo) => {
         if (la < 20 && lo < 72) return false;
         return lo < 92 || la > 20;
       }},
-      // SE Asia / Indonesia (scattered)
       { lat: [-11, 28], lon: [92, 141], test: (la, lo) => {
-        if (la > 15 && lo < 100) return true; // myanmar/thailand
+        if (la > 15 && lo < 100) return true;
         if (la > 0 && lo > 100 && lo < 110) return true;
         if (la < 5 && la > -9 && lo > 95 && lo < 120) return Math.sin(lo * 0.8 + la) > -0.2;
         if (la < 0 && lo > 110 && lo < 140) return Math.cos(lo * 0.5) > -0.3;
         return la > 5 && lo < 108;
       }},
-      // East Asia (China, Japan, Korea)
       { lat: [18, 54], lon: [97, 146], test: (la, lo) => {
-        if (lo > 128 && la < 30) return false; // pacific
-        if (lo > 140 && la < 42) return la > 30 && lo < 146; // japan-ish
+        if (lo > 128 && la < 30) return false;
+        if (lo > 140 && la < 42) return la > 30 && lo < 146;
         return lo < 135 || (lo < 146 && la > 30 && la < 46);
       }},
-      // Australia
       { lat: [-44, -10], lon: [112, 154], test: (la, lo) => {
         if (la < -40 && lo < 145) return lo > 140;
         return !(la > -15 && lo < 120);
       }},
-      // New Zealand
       { lat: [-48, -33], lon: [165, 179], test: () => true },
-      // Antarctica (edge band)
       { lat: [-90, -62], lon: [-180, 180], test: () => Math.random() > 0.15 },
-      // UK / Ireland already in Europe; Iceland
       { lat: [63, 67], lon: [-25, -13], test: () => true },
-      // Madagascar
       { lat: [-26, -12], lon: [43, 51], test: () => true },
-      // Japan core
       { lat: [30, 46], lon: [129, 146], test: (la, lo) => lo > 130 },
-      // Philippines
       { lat: [5, 20], lon: [117, 127], test: () => Math.random() > 0.35 },
-      // Caribbean islands sparse
       { lat: [10, 27], lon: [-86, -59], test: (la, lo) => {
-        if (lo > -78 && lo < -70 && la > 17 && la < 24) return Math.random() > 0.4; // cuba-ish
+        if (lo > -78 && lo < -70 && la > 17 && la < 24) return Math.random() > 0.4;
         return false;
       }},
     ];
-
     for (const r of regions) {
       if (lat >= r.lat[0] && lat <= r.lat[1] && lon >= r.lon[0] && lon <= r.lon[1]) {
         if (r.test(lat, lon)) return true;
@@ -483,7 +690,6 @@
 
     const dots = [];
     const R = size * 0.42;
-    // denser sampling for readable continents
     const N = 4200;
     const golden = Math.PI * (3 - Math.sqrt(5));
 
@@ -493,17 +699,11 @@
       const theta = golden * i;
       const x = Math.cos(theta) * radius;
       const z = Math.sin(theta) * radius;
-
-      // sphere → lat/lon
       const lat = (Math.asin(Math.max(-1, Math.min(1, y))) * 180) / Math.PI;
       const lon = (Math.atan2(x, z) * 180) / Math.PI;
-
-      if (isLand(lat, lon)) {
-        dots.push({ x, y, z, lat });
-      }
+      if (isLand(lat, lon)) dots.push({ x, y, z, lat });
     }
 
-    // light ocean ring dots for sphere silhouette (sparse)
     for (let i = 0; i < 280; i++) {
       const y = 1 - (i / 279) * 2;
       const radius = Math.sqrt(Math.max(0, 1 - y * y));
@@ -512,18 +712,16 @@
       const z = Math.sin(theta) * radius;
       const lat = (Math.asin(Math.max(-1, Math.min(1, y))) * 180) / Math.PI;
       const lon = (Math.atan2(x, z) * 180) / Math.PI;
-      if (!isLand(lat, lon) && Math.random() > 0.82) {
-        dots.push({ x, y, z, ocean: true });
-      }
+      if (!isLand(lat, lon) && Math.random() > 0.82) dots.push({ x, y, z, ocean: true });
     }
 
-    let rot = 0.4; // start showing Eurasia/Africa nicely
+    let rot = 0.4;
     const cx = size / 2;
     const cy = size / 2;
 
     const draw = () => {
       ctx.clearRect(0, 0, size, size);
-      rot += reduceMotion ? 0 : 0.0028;
+      rot += motionOK() ? 0.0028 : 0;
 
       const cos = Math.cos(rot);
       const sin = Math.sin(rot);
@@ -531,7 +729,6 @@
       const cosT = Math.cos(tilt);
       const sinT = Math.sin(tilt);
 
-      // atmosphere
       const g = ctx.createRadialGradient(cx, cy, R * 0.1, cx, cy, R * 1.22);
       g.addColorStop(0, "rgba(140, 91, 255, 0.12)");
       g.addColorStop(0.55, "rgba(46, 18, 72, 0.08)");
@@ -541,7 +738,6 @@
       ctx.arc(cx, cy, R * 1.22, 0, Math.PI * 2);
       ctx.fill();
 
-      // soft ocean fill disk
       ctx.beginPath();
       ctx.fillStyle = "rgba(30, 20, 55, 0.45)";
       ctx.arc(cx, cy, R, 0, Math.PI * 2);
@@ -549,11 +745,10 @@
 
       const projected = [];
       for (const p of dots) {
-        let x = p.x * cos - p.z * sin;
-        let z = p.x * sin + p.z * cos;
-        let y = p.y;
-        const y2 = y * cosT - z * sinT;
-        const z2 = y * sinT + z * cosT;
+        const x = p.x * cos - p.z * sin;
+        const z = p.x * sin + p.z * cos;
+        const y2 = p.y * cosT - z * sinT;
+        const z2 = p.y * sinT + z * cosT;
         projected.push({ x, y: y2, z: z2, ocean: p.ocean });
       }
       projected.sort((a, b) => a.z - b.z);
@@ -579,14 +774,13 @@
         }
       }
 
-      // rim light
       ctx.beginPath();
       ctx.strokeStyle = "rgba(140, 91, 255, 0.25)";
       ctx.lineWidth = 1.2 * dpr;
       ctx.arc(cx, cy, R, 0, Math.PI * 2);
       ctx.stroke();
 
-      if (!reduceMotion) requestAnimationFrame(draw);
+      requestAnimationFrame(draw);
     };
 
     draw();

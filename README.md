@@ -3,7 +3,7 @@
 Modern SaaS-style portfolio for **Sakib Hossen (Shanto / Steve)**  
 Brand: **Spectra Studio** · Colors: `#2E1248` `#4B1E73` `#8C5BFF` `#0F0F14`
 
-**Project location (F: drive):** `F:\spectra-portfolio`
+**Project location (F: drive):** `F:\Automation projects\Spectra-Portfolio`
 
 ---
 
@@ -13,13 +13,13 @@ Double-click `index.html`
 or in PowerShell:
 
 ```powershell
-start F:\spectra-portfolio\index.html
+start F:\Automation projects\Spectra-Portfolio\index.html
 ```
 
 Or serve with Node:
 
 ```powershell
-cd F:\spectra-portfolio
+cd F:\Automation projects\Spectra-Portfolio
 npx --yes serve -l 5500
 ```
 
@@ -46,7 +46,7 @@ Open: `http://YOUR_SERVER_IP:8000` and finish setup.
 ### 3. Deploy this portfolio
 
 **Option A — Git (best)**  
-1. Push `F:\spectra-portfolio` to GitHub/GitLab.  
+1. Push `F:\Automation projects\Spectra-Portfolio` to GitHub/GitLab.  
 2. In Coolify: **+ New Resource → Public/Private Repository**.  
 3. Select this repo.  
 4. Build pack: **Dockerfile** (auto-detected).  
@@ -64,7 +64,7 @@ Build command: none · Publish directory: project root · uses nginx Dockerfile 
 ### 4. Local Docker test (after installing Docker Desktop on Windows)
 
 ```powershell
-cd F:\spectra-portfolio
+cd F:\Automation projects\Spectra-Portfolio
 docker compose up --build -d
 ```
 
@@ -89,7 +89,7 @@ Self-hosted Coolify is free; you only pay for the VPS.
 ## Project structure
 
 ```
-F:\spectra-portfolio\
+F:\Automation projects\Spectra-Portfolio\
   index.html
   css\styles.css
   js\main.js

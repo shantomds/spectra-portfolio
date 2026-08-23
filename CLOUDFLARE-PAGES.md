@@ -19,7 +19,7 @@ https://github.com/signup
 ### 3) Push this folder from PowerShell
 
 ```powershell
-cd F:\spectra-portfolio
+cd F:\Automation projects\Spectra-Portfolio
 git init
 git add .
 git commit -m "Spectra Studio portfolio for Cloudflare Pages"
@@ -53,7 +53,7 @@ Pages → your project → **Custom domains** → add domain → follow DNS step
 
 ### With Wrangler (CLI)
 ```powershell
-cd F:\spectra-portfolio
+cd F:\Automation projects\Spectra-Portfolio
 npx --yes wrangler pages deploy . --project-name=spectra-studio-portfolio
 ```
 Browser opens to log in to Cloudflare once.
@@ -76,4 +76,4 @@ Browser opens to log in to Cloudflare once.
 ---
 
 ## Project path
-`F:\spectra-portfolio`
+`F:\Automation projects\Spectra-Portfolio`

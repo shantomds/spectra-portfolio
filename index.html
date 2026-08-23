@@ -5,23 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sakib Hossen (Shanto) | Creative Graphic Designer · Spectra Studio</title>
   <meta name="description" content="Sakib Hossen (Shanto), also known as Steve — Creative graphic designer with 3+ years experience. Photo manipulation, posters, AI creative tools. Spectra Studio · Dhaka." />
-  <meta name="theme-color" content="#0F0F14" />
+  <meta name="theme-color" content="#050507" />
   <meta property="og:title" content="Sakib Hossen (Shanto) · Spectra Studio" />
   <meta property="og:description" content="Creative graphic designer · Photo manipulation, posters, AI tools · 40+ clients" />
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
-  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="assets/brand/favicon.svg" />
+  <link rel="icon" href="assets/brand/favicon-64.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/brand/logo.png" />
 </head>
-<body>
+<body class="theme-dark-init">
+
+  <!-- Scroll progress -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"><span></span></div>
+
   <!-- Nav -->
   <header class="nav" id="nav">
     <div class="nav-inner">
       <a href="#home" class="logo" aria-label="Spectra Studio home">
-        <img class="logo-img" src="assets/brand/spectra-logo.jpg" alt="Spectra Studio" width="160" height="48" />
+        <img class="logo-mark" src="assets/brand/logo.png" alt="Spectra Studio SX monogram" width="36" height="36" />
+        <span class="logo-word">Spectra<em>Studio</em></span>
       </a>
 
       <nav class="nav-links" id="navLinks" aria-label="Primary">
@@ -30,7 +35,6 @@
         <a href="#process">Process</a>
         <a href="#about-me">Interests</a>
         <a href="#work">Work</a>
-        <a href="#pricing">Pricing</a>
         <a href="#contact">Contact</a>
       </nav>
 
@@ -38,8 +42,12 @@
         <button type="button" class="mode-switch" id="themeToggle" aria-label="Switch light or dark mode" title="Day / Night mode">
           <span class="mode-track">
             <span class="mode-thumb" aria-hidden="true"></span>
-            <span class="mode-icon mode-sun" aria-hidden="true">☀</span>
-            <span class="mode-icon mode-moon" aria-hidden="true">☾</span>
+            <span class="mode-icon mode-sun" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            </span>
+            <span class="mode-icon mode-moon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+            </span>
           </span>
         </button>
         <button type="button" class="btn btn-glass btn-sm calm-toggle" id="calmToggle" aria-pressed="false" title="Toggle calm mode">
@@ -54,8 +62,9 @@
     </div>
   </header>
 
-  <!-- Global galaxy field -->
+  <!-- Global atmosphere -->
   <div class="cosmos" aria-hidden="true">
+    <canvas id="cosmosFx"></canvas>
     <div class="cosmos-stars cosmos-stars-a"></div>
     <div class="cosmos-stars cosmos-stars-b"></div>
     <div class="nebula n1"></div>
@@ -68,60 +77,62 @@
   <!-- Hero / About -->
   <section class="section hero" id="home">
     <div class="bg-scene" aria-hidden="true">
-      <div class="stars"></div>
-      <div class="arc"></div>
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="orb orb-3"></div>
-      <!-- Solar orbits only (globe lives in dashboard) -->
-      <div class="space-visuals solar-only">
-        <div class="solar-system" aria-hidden="true">
-          <div class="sun"></div>
-          <div class="ellipse e1"><span class="body"></span></div>
-          <div class="ellipse e2"><span class="body"></span></div>
-          <div class="ellipse e3"><span class="body"></span></div>
-          <div class="ellipse e4"><span class="body"></span></div>
-          <div class="ellipse e5"><span class="body"></span></div>
-          <div class="ellipse e6"><span class="body"></span></div>
-          <div class="ellipse e7"><span class="body"></span></div>
-          <div class="ellipse e8"><span class="body"></span></div>
-        </div>
-      </div>
+      <canvas class="velaris" id="velaris"></canvas>
+      <div class="hero-grid-pattern"></div>
+      <svg class="line-art" viewBox="0 0 900 700" fill="none" preserveAspectRatio="xMidYMid slice">
+        <circle class="animation-line" cx="700" cy="160" r="120" stroke="rgba(140,91,255,.35)" stroke-width="1.2"/>
+        <circle class="animation-line" cx="700" cy="160" r="190" stroke="rgba(140,91,255,.18)" stroke-width="1"/>
+        <path class="animation-line" d="M-40 560 C 180 420, 340 640, 560 480 S 900 420, 980 500" stroke="rgba(192,132,252,.25)" stroke-width="1.2"/>
+        <path class="animation-line" d="M120 -40 C 200 180, 80 320, 200 520" stroke="rgba(255,255,255,.10)" stroke-width="1"/>
+      </svg>
     </div>
 
     <div class="container hero-grid">
       <div class="reveal">
         <div class="hero-badge"><i></i> Open for creative projects · Spectra Studio</div>
         <h1>Sakib Hossen <em>(Shanto)</em></h1>
-        <p class="aka">Also known as Steve · Creative Graphic Designer</p>
+        <p class="hero-role grad-text" id="heroRole">Creative Graphic Designer</p>
         <p class="lead" id="about">
           I craft high-impact visuals — photo manipulation, multi-niche posters, fashion editorials,
           and AI-powered creative systems. 3+ years and <strong class="text-accent">40+ clients</strong>
           through <strong class="text-accent">Spectra Studio</strong>. Currently working as
-          <strong class="text-accent">Creative Executive</strong> at X Index Companies
-          (X Ceramics Group &amp; X Bathware). Based in Dhaka, Uttarkhan near Uttara.
+          <strong class="text-accent">Creative Executive</strong> at
+          <strong class="text-accent">XIC (X Index Companies)</strong> — X Ceramics Group &amp; X Bathware.
+          Based in Dhaka, Uttarkhan near Uttara.
         </p>
         <div class="hero-ctas">
-          <a class="btn btn-primary" href="https://wa.me/8801406313103?text=Hi%20Sakib%2C%20I%27d%20like%20to%20discuss%20a%20design%20project." target="_blank" rel="noopener">Discuss a Project</a>
+          <a class="btn btn-primary btn-pulse" href="https://wa.me/8801406313103?text=Hi%20Sakib%2C%20I%27d%20like%20to%20discuss%20a%20design%20project." target="_blank" rel="noopener">Discuss a Project</a>
           <a class="btn btn-glass" href="#work">View My Work</a>
           <a class="btn btn-whatsapp" href="https://wa.me/8801406313103?text=Hi%20Sakib%2C%20I%20found%20your%20portfolio%20and%20want%20to%20chat." target="_blank" rel="noopener">Chat on WhatsApp</a>
+        </div>
+        <div class="hero-stats">
+          <div><strong>3+</strong><span>Years</span></div>
+          <div><strong>40+</strong><span>Clients</span></div>
+          <div><strong>21</strong><span>Featured works</span></div>
         </div>
         <p class="reply-hint">Typical reply: <strong>under 24 hours</strong> · WhatsApp preferred</p>
       </div>
 
-      <aside class="hero-card glass reveal">
+      <aside class="hero-card glass reveal tilt" id="heroCard">
         <div class="hero-photo">
           <img class="profile-photo" src="assets/brand/profile.png" alt="Sakib Hossen (Shanto)" width="480" height="600" />
           <div class="tag">Dhaka · Uttarkhan near Uttara<br />Spectra Studio · Brand Creative</div>
         </div>
+        <div class="chip-float chip-a glass"><span class="chip-dot"></span>Open for projects</div>
+        <div class="chip-float chip-b glass">Reply &lt; 24h</div>
         <div class="hero-meta">
           <div><strong>3+</strong><span>Years experience</span></div>
-          <div><strong>40+</strong><span>Clients & companies</span></div>
+          <div><strong>40+</strong><span>Clients &amp; companies</span></div>
           <div><strong>2023–26</strong><span>Active creative years</span></div>
           <div><strong>BD</strong><span>Based in Dhaka</span></div>
         </div>
       </aside>
     </div>
+
+    <a class="scroll-hint" href="#dashboard" aria-label="Scroll to dashboard">
+      <span class="scroll-mouse" aria-hidden="true"><span></span></span>
+      <small>Scroll</small>
+    </a>
   </section>
 
   <!-- Dashboard -->
@@ -130,13 +141,12 @@
       <div class="grid"></div>
       <div class="orb orb-2"></div>
       <div class="orb orb-3"></div>
-      <div class="orb orb-1" style="opacity:.25"></div>
     </div>
     <div class="container">
       <div class="section-head reveal">
-        <div class="eyebrow">Personal dashboard</div>
-        <h2>How I operate</h2>
-        <p>A product-style snapshot of my capacity, tools, and creative orbit — the Spectra way of working.</p>
+        <div class="eyebrow">Inside the studio</div>
+        <h2>The Spectra system</h2>
+        <p>Where branding, design craft, and AI pipelines meet — a live look at the tools and rhythm behind every Spectra delivery.</p>
       </div>
 
       <div class="globe-showcase glass reveal" aria-hidden="true">
@@ -144,49 +154,55 @@
           <h3>Creative orbit</h3>
           <p>Design that moves across brands, screens, and stories — from Dhaka to wherever your product needs to land.</p>
         </div>
-        <canvas class="dot-globe-main" id="dotGlobe" width="360" height="360"></canvas>
+        <canvas class="thinking-orb globe-orb" data-state="solving" data-size="300" role="img" aria-label="Solving orb"></canvas>
       </div>
 
       <div class="dash-grid reveal">
-        <div class="dash-main glass">
-          <div class="dash-top">
-            <h3>Spectra Control Panel</h3>
-            <div class="status-pill"><i></i> Available · limited seats</div>
-          </div>
-          <div class="metrics" id="metrics">
-            <div class="metric"><strong class="count-up" data-target="3" data-suffix="+">0</strong><span>Years experience</span></div>
-            <div class="metric"><strong class="count-up" data-target="40" data-suffix="+">0</strong><span>Clients served</span></div>
-            <div class="metric"><strong class="count-up" data-target="23" data-suffix="+">0</strong><span>Featured works here</span></div>
-          </div>
-          <div class="chart-box">
-            <h4>Creative output focus <span class="live-dot"></span> live</h4>
-            <div class="bars bars-live" id="liveBars" aria-hidden="true">
-              <span style="--h:45%; --d:0s"></span>
-              <span style="--h:62%; --d:0.15s"></span>
-              <span style="--h:50%; --d:0.3s"></span>
-              <span style="--h:78%; --d:0.45s"></span>
-              <span style="--h:68%; --d:0.6s"></span>
-              <span style="--h:90%; --d:0.75s"></span>
-              <span style="--h:72%; --d:0.9s"></span>
+        <div class="dash-left">
+          <div class="dash-main glass spotlight">
+            <div class="dash-top">
+              <h3>Spectra Control Panel</h3>
+              <div class="dash-top-right">
+                <span class="dash-clock" id="dashClock" title="Local time in Dhaka">--:--:--</span>
+                <div class="status-pill"><i></i> Available · limited seats</div>
+              </div>
             </div>
-            <div class="bar-labels">
-              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-            </div>
-          </div>
-        </div>
 
-        <div class="dash-side">
-          <div class="side-card glass">
-            <h4>Core tools</h4>
-            <div class="tool-row">
-              <span class="tool pulse-chip">Photoshop</span>
-              <span class="tool pulse-chip">Illustrator</span>
-              <span class="tool pulse-chip">After Effects</span>
-              <span class="tool pulse-chip">AI Creative Tools</span>
-              <span class="tool pulse-chip">AI-assisted Coding</span>
+            <div class="metrics" id="metrics">
+              <div class="metric">
+                <svg class="spark" viewBox="0 0 80 26" preserveAspectRatio="none" aria-hidden="true"><path d="M2 22 L14 18 L26 20 L38 12 L50 15 L62 8 L78 4"/></svg>
+                <strong class="count-up" data-target="3" data-suffix="+">0</strong><span>Years experience</span>
+              </div>
+              <div class="metric">
+                <svg class="spark" viewBox="0 0 80 26" preserveAspectRatio="none" aria-hidden="true"><path d="M2 20 L14 16 L26 17 L38 10 L50 12 L62 6 L78 3"/></svg>
+                <strong class="count-up" data-target="40" data-suffix="+">0</strong><span>Clients served</span>
+              </div>
+              <div class="metric">
+                <svg class="spark" viewBox="0 0 80 26" preserveAspectRatio="none" aria-hidden="true"><path d="M2 23 L14 19 L26 21 L38 14 L50 13 L62 9 L78 5"/></svg>
+                <strong class="count-up" data-target="21" data-suffix="+">0</strong><span>Featured works here</span>
+              </div>
+            </div>
+
+            <div class="chart-box">
+              <div class="bars bars-live" id="liveBars" aria-hidden="true">
+                <span style="--h:45%; --d:0s"></span>
+                <span style="--h:62%; --d:0.15s"></span>
+                <span style="--h:50%; --d:0.3s"></span>
+                <span style="--h:78%; --d:0.45s"></span>
+                <span style="--h:68%; --d:0.6s"></span>
+                <span style="--h:90%; --d:0.75s"></span>
+                <span style="--h:72%; --d:0.9s"></span>
+              </div>
+              <div class="bar-labels">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+              </div>
+              <div class="pulse-box" aria-hidden="true">
+                <svg viewBox="0 0 300 40" preserveAspectRatio="none"><polyline id="pulseWave" points="" /></svg>
+              </div>
             </div>
           </div>
-          <div class="side-card glass">
+
+          <div class="side-card glass spotlight">
             <h4>Expertise</h4>
             <div class="tag-row">
               <span class="tag pulse-chip">Photo Manipulation</span>
@@ -196,14 +212,17 @@
               <span class="tag pulse-chip">Brand Campaigns</span>
             </div>
           </div>
-          <div class="side-card glass">
-            <h4>Creative orbit</h4>
-            <ul class="activity">
-              <li><strong>Spectra Studio</strong><span>Personal brand</span></li>
-              <li><strong>Client projects</strong><span>40+ delivered</span></li>
-              <li><strong>Campaign visuals</strong><span>Posters &amp; ads</span></li>
-              <li><strong>AI pipelines</strong><span>Faster production</span></li>
-            </ul>
+        </div>
+
+        <div class="dash-side">
+          <div class="side-card glass spotlight">
+            <h4>Core tools · load</h4>
+            <div class="skill" style="--val:95%"><span>Photoshop</span><span class="skill-bar"><i></i></span><em>95</em></div>
+            <div class="skill" style="--val:90%"><span>Illustrator</span><span class="skill-bar"><i></i></span><em>90</em></div>
+            <div class="skill" style="--val:78%"><span>After Effects</span><span class="skill-bar"><i></i></span><em>78</em></div>
+            <div class="skill" style="--val:88%"><span>AI Creative</span><span class="skill-bar"><i></i></span><em>88</em></div>
+            <div class="skill" style="--val:82%"><span>AI-assisted Coding</span><span class="skill-bar"><i></i></span><em>82</em></div>
+            <div class="skill" style="--val:92%"><span>Vibe Coding</span><span class="skill-bar"><i></i></span><em>92</em></div>
           </div>
         </div>
       </div>
@@ -226,7 +245,7 @@
         <article class="exp-card glass reveal">
           <div class="exp-year">Present</div>
           <div>
-            <h3>X Index Companies</h3>
+            <h3>XIC (X Index Companies)</h3>
             <div class="role">Creative Executive</div>
             <p>
               Leading creative execution for brand and marketing visuals — primarily supporting
@@ -350,8 +369,15 @@
             <h4>After Effects</h4>
             <p>Motion accents, animated creatives, social-ready loops.</p>
           </article>
+          <article class="toolkit-card">
+            <div class="toolkit-icon vc" aria-hidden="true">Vc</div>
+            <h4>Vibe Coding</h4>
+            <p>AI-paired development — describe it, shape it, ship it. Sites, tools &amp; automations.</p>
+          </article>
           <article class="toolkit-card toolkit-card-hot">
-            <div class="toolkit-icon ai-tools" aria-hidden="true">✦</div>
+            <div class="toolkit-icon ai-tools" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2z"/></svg>
+            </div>
             <h4>AI creative tools</h4>
             <p>Faster ideation &amp; production — more options, same design control.</p>
           </article>
@@ -375,27 +401,37 @@
 
       <div class="interest-grid">
         <article class="interest-card glass reveal">
-          <div class="interest-icon" aria-hidden="true">📷</div>
+          <div class="interest-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          </div>
           <h3>Photography</h3>
           <p>Chasing light, frames, and real-world texture — training the eye that makes every design feel more alive.</p>
         </article>
         <article class="interest-card glass reveal">
-          <div class="interest-icon" aria-hidden="true">✦</div>
+          <div class="interest-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2z"/><path d="M19 3l.8 2.2L22 6l-2.2.8L19 9l-.8-2.2L16 6l2.2-.8L19 3z"/></svg>
+          </div>
           <h3>AI experiments</h3>
           <p>Exploring new AI workflows for ideation, speed, and wild concepts — always with human taste in the final call.</p>
         </article>
         <article class="interest-card glass reveal">
-          <div class="interest-icon" aria-hidden="true">🎮</div>
+          <div class="interest-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6 9h12M6 9a2 2 0 0 0-2 2v3a2 2 0 0 0 4 0v-3H6zM18 9a2 2 0 0 1 2 2v3a2 2 0 0 1-4 0v-3h2z"/><path d="M8 6.5 9 4M16 6.5 15 4"/></svg>
+          </div>
           <h3>Gaming</h3>
           <p>Worlds, UI, and storytelling in games keep my visual instincts sharp and my creative instincts playful.</p>
         </article>
         <article class="interest-card glass reveal">
-          <div class="interest-icon" aria-hidden="true">✈</div>
+          <div class="interest-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M2 12l20-8-4 8 4 8-20-8z"/><path d="M8 12h.01M12 12h.01"/></svg>
+          </div>
           <h3>Tour &amp; travel</h3>
           <p>New places, new color palettes, new people — travel refills the mood boards no stock site can match.</p>
         </article>
         <article class="interest-card glass reveal interest-card-wide">
-          <div class="interest-icon" aria-hidden="true">⚡</div>
+          <div class="interest-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+          </div>
           <h3>Quick learner · always leveling up</h3>
           <p>I pick up tools and techniques fast, and I like learning a lot — new software, trends, and workflows so Spectra stays ahead, not average.</p>
         </article>
@@ -412,19 +448,19 @@
       <div class="section-head reveal">
         <div class="eyebrow">Selected work</div>
         <h2>Work showcase</h2>
-        <p>Real projects from my portfolio folder — posters, fashion, concepts, and thumbnails.</p>
+        <p>Real projects from my portfolio folder — posters, fashion, system ads, and thumbnails.</p>
       </div>
 
       <div class="filters reveal" role="tablist" aria-label="Filter work">
         <button class="filter-btn active" data-filter="all" type="button">All</button>
         <button class="filter-btn" data-filter="poster" type="button">Posters</button>
-        <button class="filter-btn" data-filter="concept" type="button">Concepts</button>
         <button class="filter-btn" data-filter="fashion" type="button">Fashion</button>
         <button class="filter-btn" data-filter="system" type="button">System / Brand</button>
         <button class="filter-btn" data-filter="thumb" type="button">Thumbnails</button>
       </div>
 
-      <div class="work-grid" id="workGrid">
+      <div class="coverflow-wrap reveal">
+        <div class="coverflow" id="coverflow" tabindex="0" aria-roledescription="carousel" aria-label="Work showcase — use arrow keys to browse">
         <!-- Posters -->
         <article class="work-card" data-cat="poster" data-title="Daredevil — Born Again" data-desc="Cinematic fanmade poster with Spectra Studio branding. Shattered mask, crimson grade, premium movie-title treatment.">
           <div class="thumb"><img src="assets/work/P1.jpg" alt="Daredevil Born Again poster" loading="lazy" /></div>
@@ -450,27 +486,17 @@
           <div class="thumb"><img src="assets/work/P6.jpg" alt="Dune fanmade poster" loading="lazy" /></div>
           <div class="body"><div class="cat">Poster</div><h3>Dune — Fanmade</h3><p>Epic desert film poster</p></div>
         </article>
-
-        <!-- Concepts -->
-        <article class="work-card" data-cat="concept" data-title="Real Design Starts Somewhere Else" data-desc="Bold concept: real design starts with understanding the problem — not Dribbble or Pinterest.">
-          <div class="thumb"><img src="assets/work/C1.jpg" alt="Real Design Starts Somewhere Else" loading="lazy" /></div>
-          <div class="body"><div class="cat">Concept</div><h3>Real Design Starts Somewhere Else</h3><p>Problem-first design message</p></div>
+        <article class="work-card" data-cat="poster" data-title="Spider Noir" data-desc="Monochrome noir tribute — a trench-coated figure swinging through a rain-soaked city, spiderweb anchor and classic detective-mystery mood.">
+          <div class="thumb"><img src="assets/work/spider-noir.jpg" alt="Spider Noir monochrome poster" loading="lazy" /></div>
+          <div class="body"><div class="cat">Poster</div><h3>Spider Noir</h3><p>Monochrome noir tribute</p></div>
         </article>
-        <article class="work-card" data-cat="concept" data-title="Overrated Trends" data-desc="Engagement concept poster: ‘What design trend do you think is overrated?’ — TV-head character, bold type.">
-          <div class="thumb"><img src="assets/work/C2.jpg" alt="Overrated Trends concept" loading="lazy" /></div>
-          <div class="body"><div class="cat">Concept</div><h3>Overrated Trends</h3><p>Social engagement visual</p></div>
+        <article class="work-card" data-cat="poster" data-title="Find Your Will" data-desc="Surreal key art — a lone figure walking toward a glowing triangular portal with a floating stone head, warm orange against cool gray.">
+          <div class="thumb"><img src="assets/work/find-your-will.jpg" alt="Find Your Will surreal poster" loading="lazy" /></div>
+          <div class="body"><div class="cat">Poster</div><h3>Find Your Will</h3><p>Surreal portal key art</p></div>
         </article>
-        <article class="work-card" data-cat="concept" data-title="Thinking Does" data-desc="‘Design trends don’t make you a better designer. Thinking does.’ — idea-first manifesto visual.">
-          <div class="thumb"><img src="assets/work/C3.jpg" alt="Thinking Does concept poster" loading="lazy" /></div>
-          <div class="body"><div class="cat">Concept</div><h3>Thinking Does</h3><p>Designer manifesto poster</p></div>
-        </article>
-        <article class="work-card" data-cat="concept" data-title="Build Ideas, Not Trends" data-desc="Concept campaign visual: most designers copy trends — the best ones build ideas.">
-          <div class="thumb"><img src="assets/work/C4.jpg" alt="Build Ideas Not Trends" loading="lazy" /></div>
-          <div class="body"><div class="cat">Concept</div><h3>Build Ideas, Not Trends</h3><p>Creative thinking campaign</p></div>
-        </article>
-        <article class="work-card" data-cat="concept" data-title="Nothing Stands Out" data-desc="When everything looks the same, nothing stands out — design as communication, not decoration.">
-          <div class="thumb"><img src="assets/work/C5.jpg" alt="Nothing Stands Out concept" loading="lazy" /></div>
-          <div class="body"><div class="cat">Concept</div><h3>Nothing Stands Out</h3><p>Stand-out design message</p></div>
+        <article class="work-card" data-cat="poster" data-title="Portal Spot" data-desc="Cinematic fantasy poster — a cloaked figure before a glowing cracked crystal, misty atmosphere in warm orange and deep teal.">
+          <div class="thumb"><img src="assets/work/portal-spot.jpg" alt="Portal Spot fantasy poster" loading="lazy" /></div>
+          <div class="body"><div class="cat">Poster</div><h3>Portal Spot</h3><p>Cinematic fantasy crystal</p></div>
         </article>
 
         <!-- Fashion -->
@@ -526,84 +552,12 @@
           <div class="thumb"><img src="assets/work/T2.jpg" alt="Giant in the Village YouTube thumbnail" loading="lazy" /></div>
           <div class="body"><div class="cat">Thumbnail</div><h3>Giant in the Village</h3><p>Scale comedy thumbnail</p></div>
         </article>
+        </div>
+        <div class="cf-meta"><span id="cfCounter">1 / 21</span><small>swipe or drag to explore</small></div>
       </div>
     </div>
   </section>
 
-  <!-- Pricing -->
-  <section class="section" id="pricing">
-    <div class="bg-scene" aria-hidden="true">
-      <div class="mesh"></div>
-      <div class="orb orb-1"></div>
-      <div class="orb orb-3"></div>
-    </div>
-    <div class="container">
-      <div class="section-head reveal">
-        <div class="eyebrow">Packages</div>
-        <h2>Clear frameworks · custom quotes</h2>
-        <p>Final pricing depends on scope and deadline. Most projects start from the ranges below — always confirmed on WhatsApp.</p>
-      </div>
-
-      <div class="pricing-meta glass reveal">
-        <div>
-          <strong>Projects usually start from</strong>
-          <p>৳1,500–3,000 <span>(~$15–30)</span> for a single creative · higher for campaigns &amp; retainers</p>
-        </div>
-        <div>
-          <strong>Typical turnaround</strong>
-          <p>Poster / social: <em>24–72h</em> · Campaign set: <em>3–7 days</em> · Monthly: ongoing</p>
-        </div>
-      </div>
-
-      <div class="pricing-grid">
-        <article class="price-card glass reveal">
-          <h3>Starter Creative</h3>
-          <div class="price">From ৳1,500</div>
-          <p class="desc">Best for single creatives, social posts, and one-off edits.</p>
-          <ul class="price-list-in">
-            <li>Single poster or social creative</li>
-            <li>Basic photo retouch / manipulation</li>
-            <li>1–2 revision rounds</li>
-            <li>Delivery in 24–72 hours (typical)</li>
-            <li>Web-ready exports</li>
-          </ul>
-          <p class="price-out"><strong>Not included:</strong> brand system build, unlimited revisions, rush under 12h (unless agreed)</p>
-          <a class="btn btn-glass" href="https://wa.me/8801406313103?text=Hi%20Sakib%2C%20I%27m%20interested%20in%20Starter%20Creative.%0A%0AProject%20type%3A%0ADeadline%3A%0AReference%20links%3A" target="_blank" rel="noopener">Discuss Starter</a>
-        </article>
-
-        <article class="price-card glass featured reveal">
-          <h3>Brand Growth</h3>
-          <div class="price">From ৳12,000/mo</div>
-          <p class="desc">Monthly creative support for brands that need consistent output.</p>
-          <ul class="price-list-in">
-            <li>Multi-asset campaign sets</li>
-            <li>Social + poster systems</li>
-            <li>Priority revisions</li>
-            <li>AI-assisted production speed</li>
-            <li>Weekly progress check-ins</li>
-          </ul>
-          <p class="price-out"><strong>Not included:</strong> full company rebrand, video production packages, 24/7 on-call (Partner tier)</p>
-          <a class="btn btn-primary" href="https://wa.me/8801406313103?text=Hi%20Sakib%2C%20I%27m%20interested%20in%20Brand%20Growth%20monthly%20support.%0A%0ABrand%20%2F%20business%3A%0AAssets%20needed%20per%20month%3A%0AStart%20date%3A" target="_blank" rel="noopener">Discuss Growth</a>
-        </article>
-
-        <article class="price-card glass reveal">
-          <h3>Spectra Partner</h3>
-          <div class="price">Custom retainer</div>
-          <p class="desc">Ongoing partnership for brands needing dedicated creative capacity.</p>
-          <ul class="price-list-in">
-            <li>Retainer-style priority access</li>
-            <li>Brand systems &amp; motion support</li>
-            <li>Fashion / campaign direction</li>
-            <li>Photoshop · AI · AE pipeline</li>
-            <li>Direct WhatsApp collaboration</li>
-          </ul>
-          <p class="price-out"><strong>Not included:</strong> print production costs, stock licenses (unless arranged), third-party developer work</p>
-          <a class="btn btn-glass" href="https://wa.me/8801406313103?text=Hi%20Sakib%2C%20I%27d%20like%20to%20talk%20about%20Spectra%20Partner%20retainer.%0A%0ACompany%3A%0AMonthly%20creative%20needs%3A%0ATimeline%3A" target="_blank" rel="noopener">Discuss Partner</a>
-        </article>
-      </div>
-      <p class="price-note">Ranges are starting points for discussion — final quote depends on volume, complexity, and deadline. Typical reply under 24 hours.</p>
-    </div>
-  </section>
 
   <!-- Contact -->
   <section class="section" id="contact">
@@ -614,7 +568,7 @@
     <div class="container">
       <div class="section-head reveal">
         <div class="eyebrow">Get in touch</div>
-        <h2>Let’s build something bold</h2>
+        <h2 class="grad-text">Let’s build something bold</h2>
         <p>WhatsApp is fastest · <strong class="text-accent">Typical reply: under 24 hours</strong></p>
       </div>
 
@@ -634,7 +588,7 @@
             <a class="btn btn-glass" href="https://www.behance.net/shantoahmed0" target="_blank" rel="noopener">Behance</a>
           </div>
           <div class="socials socials-modern" aria-label="Social links">
-            <a class="soc soc-fb" href="https://www.facebook.com/itssteve.meta" target="_blank" rel="noopener" title="Facebook · Steve">
+            <a class="soc soc-fb" href="https://www.facebook.com/itssteve.meta2" target="_blank" rel="noopener" title="Facebook · Steve">
               <span class="soc-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3c-2.8 0-5 2.2-5 5v2H6v4h3v8h4v-8h3.1l.9-4H13V9c0-.6.4-1 1-1z"/></svg>
               </span>
@@ -697,17 +651,52 @@
     </div>
   </section>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <p>© <span id="year"></span> Sakib Hossen (Shanto) · Spectra Studio. All rights reserved.</p>
-      <div class="footer-links">
-        <a href="#work">Work</a>
-        <a href="#pricing">Pricing</a>
-        <a href="https://wa.me/8801406313103" target="_blank" rel="noopener">WhatsApp</a>
-        <a href="mailto:Shantomds422@gmail.com">Email</a>
+  <!-- Cinematic motion footer (ported from 21st.dev easemize/motion-footer) -->
+  <div class="cine-footer" id="cineFooter">
+    <footer class="cine-footer-fixed" aria-label="Site footer">
+      <div class="cf-aurora" aria-hidden="true"></div>
+      <div class="cf-grid" aria-hidden="true"></div>
+      <div class="cf-giant" id="cfGiant" aria-hidden="true">SPECTRA</div>
+
+      <!-- Diagonal marquee band -->
+      <div class="cf-marquee-band" aria-hidden="true">
+        <div class="cf-marquee-track">
+          <span>Spectra Studio</span><i></i><span>Dhaka · Bangladesh</span><i></i><span>Creative Executive</span><i></i><span>40+ Clients</span><i></i><span>3+ Years</span><i></i><span>AI-Powered Creative</span><i></i>
+          <span>Spectra Studio</span><i></i><span>Dhaka · Bangladesh</span><i></i><span>Creative Executive</span><i></i><span>40+ Clients</span><i></i><span>3+ Years</span><i></i><span>AI-Powered Creative</span><i></i>
+        </div>
       </div>
-    </div>
-  </footer>
+
+      <!-- Main content -->
+      <div class="cf-main">
+        <h2 class="cf-heading" id="cfHeading">Ready to begin?</h2>
+        <p class="cf-sub" id="cfSub">Let’s make something people remember.</p>
+        <div class="cf-links" id="cfLinks">
+          <div class="cf-row cf-row-primary">
+            <a class="footer-glass-pill cf-pill-lg magnetic" href="https://wa.me/8801406313103?text=Hi%20Sakib%2C%20I%27m%20ready%20to%20start%20a%20project%20with%20Spectra%20Studio." target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 17.4L2 22l4.7-1.2A11 11 0 1 0 20.5 3.5zM12 20.2a9.1 9.1 0 0 1-4.6-1.3l-.3-.2-2.8.7.7-2.7-.2-.3A9.1 9.1 0 1 1 12 20.2zm5.2-6.8c-.3-.1-1.7-.8-1.9-.9s-.4-.1-.6.2-.7.9-.9 1.1-.3.2-.6.1a7.4 7.4 0 0 1-2.2-1.4 8.2 8.2 0 0 1-1.5-1.9c-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.5-.8-2-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.4s-1 1-1 2.4 1 2.8 1.2 3 2 3.1 4.9 4.2c.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4s-.3-.2-.6-.3z"/></svg>
+              WhatsApp Me
+            </a>
+            <a class="footer-glass-pill cf-pill-lg magnetic" href="mailto:Shantomds422@gmail.com?subject=Design%20project%20inquiry%20%7C%20Spectra%20Studio">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/></svg>
+              Email Me
+            </a>
+          </div>
+          <div class="cf-row">
+            <a class="footer-glass-pill magnetic" href="#work">Work</a>
+            <a class="footer-glass-pill magnetic" href="#process">Process</a>
+            <a class="footer-glass-pill magnetic" href="https://www.behance.net/shantoahmed0" target="_blank" rel="noopener">Behance</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="cf-bottom">
+        <button class="footer-glass-pill cf-top magnetic" id="cfTop" type="button" aria-label="Back to top">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+        </button>
+      </div>
+    </footer>
+  </div>
 
   <a class="float-wa" href="https://wa.me/8801406313103?text=Hi%20Sakib%2C%20I%20found%20your%20portfolio%20and%20want%20to%20discuss%20a%20project." target="_blank" rel="noopener" aria-label="WhatsApp chat">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 17.4L2 22l4.7-1.2A11 11 0 1 0 20.5 3.5zM12 20.2a9.1 9.1 0 0 1-4.6-1.3l-.3-.2-2.8.7.7-2.7-.2-.3A9.1 9.1 0 1 1 12 20.2zm5.2-6.8c-.3-.1-1.7-.8-1.9-.9s-.4-.1-.6.2-.7.9-.9 1.1-.3.2-.6.1a7.4 7.4 0 0 1-2.2-1.4 8.2 8.2 0 0 1-1.5-1.9c-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.5-.8-2-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.4s-1 1-1 2.4 1 2.8 1.2 3 2 3.1 4.9 4.2c.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4s-.3-.2-.6-.3z"/></svg>
@@ -727,6 +716,9 @@
     </div>
   </div>
 
+  <script src="js/orb.js"></script>
+  <script src="js/cosmos.js"></script>
+  <script src="js/velaris.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

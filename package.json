@@ -1,0 +1,22 @@
+{
+  "name": "spectra-portfolio",
+  "version": "1.0.0",
+  "description": "Spectra Studio portfolio — Sakib Hossen (Shanto)",
+  "private": true,
+  "scripts": {
+    "login": "wrangler login",
+    "deploy": "wrangler pages deploy . --project-name=spectra-portfolio --commit-dirty=true",
+    "dev": "wrangler pages dev ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shantomds/spectra-portfolio.git"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "wrangler": "^4.111.0"
+  },
+  "dependencies": {
+    "thinking-orbs": "^0.3.1"
+  }
+}

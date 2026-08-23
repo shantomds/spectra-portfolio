@@ -1,0 +1,7 @@
+# Cloudflare Pages / static site
+name = "spectra-portfolio"
+compatibility_date = "2025-01-01"
+
+# For: npx wrangler pages deploy
+# Build output is the project root (static HTML)
+pages_build_output_dir = "."
